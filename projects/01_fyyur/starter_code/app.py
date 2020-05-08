@@ -244,7 +244,7 @@ def venues():
 
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
-  # TODO: implement search on artists with partial string search. Ensure it is case-insensitive.
+  # TODO: implement search on venues with partial string search. Ensure it is case-insensitive.
   # seach for Hop should return "The Musical Hop".
   # search for "Music" should return "The Musical Hop" and "Park Square Live Music & Coffee"
   response={
@@ -376,17 +376,17 @@ def delete_venue(venue_id):
 #  ----------------------------------------------------------------
 @app.route('/artists')
 def artists():
-  # TODO: replace with real data returned from querying the database
-  data=[{
-    "id": 4,
-    "name": "Guns N Petals",
-  }, {
-    "id": 5,
-    "name": "Matt Quevedo",
-  }, {
-    "id": 6,
-    "name": "The Wild Sax Band",
-  }]
+  # DONE TODO: replace with real data returned from querying the database
+  artists = Artist.query.all()
+  data = []
+  for artist in range(len(artists)):
+    artist_id = artists[artist].id 
+    artist_name = artists[artist].name 
+    record = {
+      "id": artist_id,
+      "name": artist_name
+    }
+    data.append(record) 
   return render_template('pages/artists.html', artists=data)
 
 @app.route('/artists/search', methods=['POST'])
