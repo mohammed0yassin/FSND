@@ -47,7 +47,7 @@ class Venue(db.Model):
     shows_ven = db.relationship('Show', backref='venue') #Added
     past_shows_count = db.Column(db.Integer) #Added
 
-    # UT TODO: implement any missing fields, as a database migration using Flask-Migrate
+    # DONE TODO: implement any missing fields, as a database migration using Flask-Migrate
 
 class Artist(db.Model):
     __tablename__ = 'Artist'
@@ -66,16 +66,16 @@ class Artist(db.Model):
     # One-to-Many Relationship
     shows_art = db.relationship('Show', backref='artist')
 
-    # UT TODO: implement any missing fields, as a database migration using Flask-Migrate
+    # DONE TODO: implement any missing fields, as a database migration using Flask-Migrate
 
 class Show(db.Model):
   __tablename__='Show'
   id = db.Column(db.Integer, primary_key=True)
   venue_id = db.Column(db.Integer, db.ForeignKey('Venue.id'))
   artist_id = db.Column(db.Integer, db.ForeignKey('Artist.id'))
-  start_time = db.Column(db.String(), nullable=False)
+  start_time = db.Column(db.DateTime, nullable=False)
 
-# UT TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
+# DONE TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
 
 #----------------------------------------------------------------------------#
 # Filters.
@@ -191,7 +191,7 @@ if Show.query.first() == None:
   arist_data3 = Artist(**dataa3)
   db.session.add_all([arist_data1, arist_data2, arist_data3])
   db.session.commit()
-  # END of Artists data
+ # END of Artists data
 
   # Shows Data
   show_data1 = Show(venue_id = 1, artist_id = 4, start_time = "2019-05-21T21:30:00.000Z" )
@@ -217,30 +217,30 @@ if Show.query.first() == None:
 
 @app.route('/venues')
 def venues():
-  # TODO: replace with real venues data.
-  #       num_shows should be aggregated based on number of upcoming shows per venue.
-  data=[{
-    "city": "San Francisco",
-    "state": "CA",
-    "venues": [{
-      "id": 1,
-      "name": "The Musical Hop",
-      "num_upcoming_shows": 0,
-    }, {
-      "id": 3,
-      "name": "Park Square Live Music & Coffee",
-      "num_upcoming_shows": 1,
-    }]
-  }, {
-    "city": "New York",
-    "state": "NY",
-    "venues": [{
-      "id": 2,
-      "name": "The Dueling Pianos Bar",
-      "num_upcoming_shows": 0,
-    }]
-  }]
-  return render_template('pages/venues.html', areas=data);
+  # DONE TODO: replace with real venues data.
+  #    UT TODO   num_shows should be aggregated based on number of upcoming shows per venue.
+  locations = Venue.query.distinct('city','state').all()
+  data = []
+  for location in locations:
+    venues = Venue.query.filter(Venue.city == location.city, Venue.state == location.state).all()
+    venue_record = []
+    for venue in range(len(venues)):
+      venue_id = venues[venue].id
+      venue_name = venues[venue].name
+      num_shows = Show.query.filter(Show.venue_id == venue_id, Show.start_time > datetime.now()).count()
+      venue_info = {
+        "id": venue_id,
+        "name": venue_name,
+        "num_upcoming_shows": num_shows,  
+      }
+      venue_record.append(venue_info)
+    record = {
+      'city': location.city,
+      'state': location.state,
+      'venues': venue_record
+    }
+    data.append(record)
+  return render_template('pages/venues.html', areas=data)
 
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
