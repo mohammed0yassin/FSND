@@ -5,6 +5,8 @@
 	<div class="col-sm-6">
 		<h1 class="monospace">
 			{{ venue.name }}
+			<!-- <input type="button" class="btn" value="Delete Venue" onclick="alert('You clicked the button!')" style="float: right;"> -->
+			<button class="btn btn-default" id="delete-button" data-id="{{ venue.id }}" style="float:right;">Delete Venue</button>
 		</h1>
 		<p class="subtitle">
 			ID: {{ venue.id }}
@@ -75,5 +77,21 @@
 	</div>
 </section>
 
+<script>
+	  const deleteBtn = document.getElementById('delete-button');
+	  deleteBtn.onclick = function (e) {
+		console.log('delete', deleteBtn.dataset.id);
+		var result = confirm("Want to delete?");
+		if (result) {
+			const venueId = deleteBtn.dataset.id;
+			fetch('/venues/' + venueId, {
+			method: 'DELETE',
+			})
+			.then(response => {  window.location = "/";
+			})
+		}
+	
+		}
+</script>
 {% endblock %}
 
