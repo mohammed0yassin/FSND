@@ -32,8 +32,6 @@ class Venue(db.Model):
     seeking_description = db.Column(db.String(500)) 
     # One-to-Many Relationship
     shows_ven = db.relationship('Show', backref='venue', passive_deletes=True) 
-    past_shows_count = db.Column(db.Integer) 
-
     # DONE TODO: implement any missing fields, as a database migration using Flask-Migrate
 
 class Artist(db.Model):
@@ -58,8 +56,8 @@ class Artist(db.Model):
 class Show(db.Model):
   __tablename__='Show'
   id = db.Column(db.Integer, primary_key=True)
-  venue_id = db.Column(db.Integer, db.ForeignKey('Venue.id', ondelete="CASCADE"))
-  artist_id = db.Column(db.Integer, db.ForeignKey('Artist.id'))
+  venue_id = db.Column(db.Integer, db.ForeignKey('Venue.id', ondelete='cascade'))
+  artist_id = db.Column(db.Integer, db.ForeignKey('Artist.id', ondelete='cascade'))
   start_time = db.Column(db.DateTime, nullable=False)
 
     # DONE TODO: implement any missing fields, as a database migration using Flask-Migrate

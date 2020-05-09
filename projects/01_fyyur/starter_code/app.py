@@ -16,78 +16,14 @@ from forms import *
 from datetime import datetime
 import sys
 from models import *
-#----------------------------------------------------------------------------#
-# App Config.
-#----------------------------------------------------------------------------#
-
-# app = Flask(__name__)
-# moment = Moment(app)
-# app.config.from_object('config')
-# db = SQLAlchemy(app)
-# migrate = Migrate(app, db)
-# DONE TODO: connect to a local postgresql database
-#----------------------------------------------------------------------------#
-# Models.
-#----------------------------------------------------------------------------#
-
-# class Venue(db.Model):
-#     __tablename__ = 'Venue'
-#     __searchable__= ["name","city","state","address"]
-#     id = db.Column(db.Integer, primary_key=True)
-#     name = db.Column(db.String)
-#     genres = db.Column(db.ARRAY(db.String)) 
-#     address = db.Column(db.String(120))
-#     city = db.Column(db.String(120))
-#     state = db.Column(db.String(120))
-#     phone = db.Column(db.String(120))
-#     website = db.Column(db.String(120)) 
-#     image_link = db.Column(db.String(500))
-#     facebook_link = db.Column(db.String(120))
-#     seeking_talent = db.Column(db.Boolean, nullable=False, default=False) 
-#     seeking_description = db.Column(db.String(500)) 
-#     # One-to-Many Relationship
-#     shows_ven = db.relationship('Show', backref='venue', passive_deletes=True) 
-#     past_shows_count = db.Column(db.Integer) 
-
-#     # DONE TODO: implement any missing fields, as a database migration using Flask-Migrate
-
-# class Artist(db.Model):
-#     __tablename__ = 'Artist'
-#     __searchable__= ["name","city","state"]
-#     id = db.Column(db.Integer, primary_key=True)
-#     name = db.Column(db.String)
-#     genres = db.Column(db.ARRAY(db.String))
-#     city = db.Column(db.String(120))
-#     state = db.Column(db.String(120))
-#     phone = db.Column(db.String(120))
-#     facebook_link = db.Column(db.String(120))
-#     seeking_venue = db.Column(db.Boolean, nullable=False, default=False)
-#     seeking_description = db.Column(db.String(500))
-#     image_link = db.Column(db.String(500))
-#     website = db.Column(db.String())
-#     # One-to-Many Relationship
-#     shows_art = db.relationship('Show', backref='artist', passive_deletes=True)
-
-#     # DONE TODO: implement any missing fields, as a database migration using Flask-Migrate
-
-# class Show(db.Model):
-#   __tablename__='Show'
-#   id = db.Column(db.Integer, primary_key=True)
-#   venue_id = db.Column(db.Integer, db.ForeignKey('Venue.id', ondelete="CASCADE"))
-#   artist_id = db.Column(db.Integer, db.ForeignKey('Artist.id'))
-#   start_time = db.Column(db.DateTime, nullable=False)
-
-# DONE TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
-
 #  ----------------------------------------------------------------
 # Adding data to database for the first run only
 #  ----------------------------------------------------------------
 Tables = db.inspect(db.engine).get_table_names() # a variable to check if any tables exist in the DB
 if len(Tables) > 1: # The condition checks if any tables exist in the DB. And "> 1" as the 'alembic_version' is created when flask db init is run
-  if Show.query.first() == None: # The condition is to check if there are any data in the table, if not it inserts mock data into the DB
+  if Artist.query.first() == None: # The condition is to check if there are any data in the table, if not it inserts mock data into the DB
   # Venues data
     datav1={
-        "id": 1,
         "name": "The Musical Hop",
         "genres": ["Jazz", "Reggae", "Swing", "Classical", "Folk"],
         "address": "1015 Folsom Street",
@@ -101,7 +37,6 @@ if len(Tables) > 1: # The condition checks if any tables exist in the DB. And ">
         "image_link": "https://images.unsplash.com/photo-1543900694-133f37abaaa5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=60"
     }
     datav2={
-        "id": 2,
         "name": "The Dueling Pianos Bar",
         "genres": ["Classical", "R&B", "Hip-Hop"],
         "address": "335 Delancey Street",
@@ -114,7 +49,6 @@ if len(Tables) > 1: # The condition checks if any tables exist in the DB. And ">
         "image_link": "https://images.unsplash.com/photo-1497032205916-ac775f0649ae?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80"
     }
     datav3={
-        "id": 3,
         "name": "Park Square Live Music & Coffee",
         "genres": ["Rock n Roll", "Jazz", "Classical", "Folk"],
         "address": "34 Whiskey Moore Ave",
@@ -126,16 +60,14 @@ if len(Tables) > 1: # The condition checks if any tables exist in the DB. And ">
         "seeking_talent": False,
         "image_link": "https://images.unsplash.com/photo-1485686531765-ba63b07845a7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=747&q=80"
     }
-    venue_data1 = Venue(**datav1)
+    venue_data1 = Venue(**datav1) 
     venue_data2 = Venue(**datav2)
     venue_data3 = Venue(**datav3)
     db.session.add_all([venue_data1, venue_data2, venue_data3])
-    db.session.commit()
     # END of Venues data
 
     # Artists data
     dataa1={
-        "id": 4,
         "name": "Guns N Petals",
         "genres": ["Rock n Roll"],
         "city": "San Francisco",
@@ -148,7 +80,6 @@ if len(Tables) > 1: # The condition checks if any tables exist in the DB. And ">
         "image_link": "https://images.unsplash.com/photo-1549213783-8284d0336c4f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=300&q=80"
     }
     dataa2={
-        "id": 5,
         "name": "Matt Quevedo",
         "genres": ["Jazz"],
         "city": "New York",
@@ -159,7 +90,6 @@ if len(Tables) > 1: # The condition checks if any tables exist in the DB. And ">
         "image_link": "https://images.unsplash.com/photo-1495223153807-b916f75de8c5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80"
     }
     dataa3={
-        "id": 6,
         "name": "The Wild Sax Band",
         "genres": ["Jazz", "Classical"],
         "city": "San Francisco",
@@ -172,23 +102,18 @@ if len(Tables) > 1: # The condition checks if any tables exist in the DB. And ">
     arist_data2 = Artist(**dataa2)
     arist_data3 = Artist(**dataa3)
     db.session.add_all([arist_data1, arist_data2, arist_data3])
-    db.session.commit()
     # END of Artists data
 
     # Shows Data
-    show_data1 = Show(venue_id = 1, artist_id = 4, start_time = "2019-05-21T21:30:00.000Z" )
+    show_data1 = Show(venue_id = 1, artist_id = 1, start_time = "2019-05-21T21:30:00.000Z" )
     db.session.add(show_data1)
-    db.session.commit()
-    show_data2 = Show(venue_id = 3, artist_id = 5, start_time = "2019-06-15T23:00:00.000Z" )
+    show_data2 = Show(venue_id = 3, artist_id = 2, start_time = "2019-06-15T23:00:00.000Z" )
     db.session.add(show_data2)
-    db.session.commit()
-    show_data3 = Show(venue_id = 3, artist_id = 6, start_time = "2035-04-01T20:00:00.000Z" )
+    show_data3 = Show(venue_id = 3, artist_id = 3, start_time = "2035-04-01T20:00:00.000Z" )
     db.session.add(show_data3)
-    db.session.commit()
-    show_data4 = Show(venue_id = 3, artist_id = 6, start_time = "2035-04-08T20:00:00.000Z" )
+    show_data4 = Show(venue_id = 3, artist_id = 3, start_time = "2035-04-08T20:00:00.000Z" )
     db.session.add(show_data4)
-    db.session.commit()
-    show_data5 = Show(venue_id = 3, artist_id = 6, start_time = "2035-04-15T20:00:00.000Z" )
+    show_data5 = Show(venue_id = 3, artist_id = 3, start_time = "2035-04-15T20:00:00.000Z" )
     db.session.add(show_data5)
     db.session.commit()
   # END of Shows data
@@ -214,7 +139,6 @@ app.jinja_env.filters['datetime'] = format_datetime
 @app.route('/')
 def index():
   return render_template('pages/home.html')
-
 
 #  ----------------------------------------------------------------
 #  Venues
@@ -293,7 +217,7 @@ def show_venue(venue_id):
     past_shows_record.append(precord)
 
   for num_ushow in range(num_upcoming_shows):
-    artist = Show.query.filter(Show.venue_id == 3, Show.start_time > datetime.now())[num_ushow]
+    artist = Show.query.filter(Show.venue_id == venue_id, Show.start_time > datetime.now())[num_ushow]
     artist_data = Artist.query.get(artist.artist_id)
     urecord = {
       "artist_id": artist_data.id,
