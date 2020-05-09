@@ -15,67 +15,67 @@ from flask_wtf import Form
 from forms import *
 from datetime import datetime
 import sys
+from models import *
 #----------------------------------------------------------------------------#
 # App Config.
 #----------------------------------------------------------------------------#
 
-app = Flask(__name__)
-moment = Moment(app)
-app.config.from_object('config')
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
+# app = Flask(__name__)
+# moment = Moment(app)
+# app.config.from_object('config')
+# db = SQLAlchemy(app)
+# migrate = Migrate(app, db)
 # DONE TODO: connect to a local postgresql database
-#db.inspect(db.engine).get_table_names()
 #----------------------------------------------------------------------------#
 # Models.
 #----------------------------------------------------------------------------#
 
-class Venue(db.Model):
-    __tablename__ = 'Venue'
-    __searchable__= ["name","city","state","address"]
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
-    genres = db.Column(db.ARRAY(db.String)) 
-    address = db.Column(db.String(120))
-    city = db.Column(db.String(120))
-    state = db.Column(db.String(120))
-    phone = db.Column(db.String(120))
-    website = db.Column(db.String(120)) 
-    image_link = db.Column(db.String(500))
-    facebook_link = db.Column(db.String(120))
-    seeking_talent = db.Column(db.Boolean, nullable=False, default=False) 
-    seeking_description = db.Column(db.String(500)) 
-    # One-to-Many Relationship
-    shows_ven = db.relationship('Show', backref='venue', passive_deletes=True) 
-    past_shows_count = db.Column(db.Integer) 
+# class Venue(db.Model):
+#     __tablename__ = 'Venue'
+#     __searchable__= ["name","city","state","address"]
+#     id = db.Column(db.Integer, primary_key=True)
+#     name = db.Column(db.String)
+#     genres = db.Column(db.ARRAY(db.String)) 
+#     address = db.Column(db.String(120))
+#     city = db.Column(db.String(120))
+#     state = db.Column(db.String(120))
+#     phone = db.Column(db.String(120))
+#     website = db.Column(db.String(120)) 
+#     image_link = db.Column(db.String(500))
+#     facebook_link = db.Column(db.String(120))
+#     seeking_talent = db.Column(db.Boolean, nullable=False, default=False) 
+#     seeking_description = db.Column(db.String(500)) 
+#     # One-to-Many Relationship
+#     shows_ven = db.relationship('Show', backref='venue', passive_deletes=True) 
+#     past_shows_count = db.Column(db.Integer) 
 
-    # DONE TODO: implement any missing fields, as a database migration using Flask-Migrate
+#     # DONE TODO: implement any missing fields, as a database migration using Flask-Migrate
 
-class Artist(db.Model):
-    __tablename__ = 'Artist'
-    __searchable__= ["name","city","state"]
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
-    genres = db.Column(db.ARRAY(db.String))
-    city = db.Column(db.String(120))
-    state = db.Column(db.String(120))
-    phone = db.Column(db.String(120))
-    facebook_link = db.Column(db.String(120))
-    seeking_venue = db.Column(db.Boolean, nullable=False, default=False)
-    seeking_description = db.Column(db.String(500))
-    image_link = db.Column(db.String(500))
-    website = db.Column(db.String())
-    # One-to-Many Relationship
-    shows_art = db.relationship('Show', backref='artist', passive_deletes=True)
+# class Artist(db.Model):
+#     __tablename__ = 'Artist'
+#     __searchable__= ["name","city","state"]
+#     id = db.Column(db.Integer, primary_key=True)
+#     name = db.Column(db.String)
+#     genres = db.Column(db.ARRAY(db.String))
+#     city = db.Column(db.String(120))
+#     state = db.Column(db.String(120))
+#     phone = db.Column(db.String(120))
+#     facebook_link = db.Column(db.String(120))
+#     seeking_venue = db.Column(db.Boolean, nullable=False, default=False)
+#     seeking_description = db.Column(db.String(500))
+#     image_link = db.Column(db.String(500))
+#     website = db.Column(db.String())
+#     # One-to-Many Relationship
+#     shows_art = db.relationship('Show', backref='artist', passive_deletes=True)
 
-    # DONE TODO: implement any missing fields, as a database migration using Flask-Migrate
+#     # DONE TODO: implement any missing fields, as a database migration using Flask-Migrate
 
-class Show(db.Model):
-  __tablename__='Show'
-  id = db.Column(db.Integer, primary_key=True)
-  venue_id = db.Column(db.Integer, db.ForeignKey('Venue.id', ondelete="CASCADE"))
-  artist_id = db.Column(db.Integer, db.ForeignKey('Artist.id'))
-  start_time = db.Column(db.DateTime, nullable=False)
+# class Show(db.Model):
+#   __tablename__='Show'
+#   id = db.Column(db.Integer, primary_key=True)
+#   venue_id = db.Column(db.Integer, db.ForeignKey('Venue.id', ondelete="CASCADE"))
+#   artist_id = db.Column(db.Integer, db.ForeignKey('Artist.id'))
+#   start_time = db.Column(db.DateTime, nullable=False)
 
 # DONE TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
 
@@ -83,7 +83,7 @@ class Show(db.Model):
 # Adding data to database for the first run only
 #  ----------------------------------------------------------------
 Tables = db.inspect(db.engine).get_table_names() # a variable to check if any tables exist in the DB
-if len(Tables)-1: # The condition checks if any tables exist in the DB. And "-1" as the 'alembic_version'] is created when flask db init is run
+if len(Tables) > 1: # The condition checks if any tables exist in the DB. And "> 1" as the 'alembic_version' is created when flask db init is run
   if Show.query.first() == None: # The condition is to check if there are any data in the table, if not it inserts mock data into the DB
   # Venues data
     datav1={
@@ -130,6 +130,7 @@ if len(Tables)-1: # The condition checks if any tables exist in the DB. And "-1"
     venue_data2 = Venue(**datav2)
     venue_data3 = Venue(**datav3)
     db.session.add_all([venue_data1, venue_data2, venue_data3])
+    db.session.commit()
     # END of Venues data
 
     # Artists data
@@ -172,24 +173,24 @@ if len(Tables)-1: # The condition checks if any tables exist in the DB. And "-1"
     arist_data3 = Artist(**dataa3)
     db.session.add_all([arist_data1, arist_data2, arist_data3])
     db.session.commit()
-  # END of Artists data
+    # END of Artists data
 
-  # Shows Data
-  show_data1 = Show(venue_id = 1, artist_id = 4, start_time = "2019-05-21T21:30:00.000Z" )
-  db.session.add(show_data1)
-  db.session.commit()
-  show_data2 = Show(venue_id = 3, artist_id = 5, start_time = "2019-06-15T23:00:00.000Z" )
-  db.session.add(show_data2)
-  db.session.commit()
-  show_data3 = Show(venue_id = 3, artist_id = 6, start_time = "2035-04-01T20:00:00.000Z" )
-  db.session.add(show_data3)
-  db.session.commit()
-  show_data4 = Show(venue_id = 3, artist_id = 6, start_time = "2035-04-08T20:00:00.000Z" )
-  db.session.add(show_data4)
-  db.session.commit()
-  show_data5 = Show(venue_id = 3, artist_id = 6, start_time = "2035-04-15T20:00:00.000Z" )
-  db.session.add(show_data5)
-  db.session.commit()
+    # Shows Data
+    show_data1 = Show(venue_id = 1, artist_id = 4, start_time = "2019-05-21T21:30:00.000Z" )
+    db.session.add(show_data1)
+    db.session.commit()
+    show_data2 = Show(venue_id = 3, artist_id = 5, start_time = "2019-06-15T23:00:00.000Z" )
+    db.session.add(show_data2)
+    db.session.commit()
+    show_data3 = Show(venue_id = 3, artist_id = 6, start_time = "2035-04-01T20:00:00.000Z" )
+    db.session.add(show_data3)
+    db.session.commit()
+    show_data4 = Show(venue_id = 3, artist_id = 6, start_time = "2035-04-08T20:00:00.000Z" )
+    db.session.add(show_data4)
+    db.session.commit()
+    show_data5 = Show(venue_id = 3, artist_id = 6, start_time = "2035-04-15T20:00:00.000Z" )
+    db.session.add(show_data5)
+    db.session.commit()
   # END of Shows data
 
 #----------------------------------------------------------------------------#
