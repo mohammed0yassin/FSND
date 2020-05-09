@@ -25,7 +25,7 @@ app.config.from_object('config')
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 # DONE TODO: connect to a local postgresql database
-
+#db.inspect(db.engine).get_table_names()
 #----------------------------------------------------------------------------#
 # Models.
 #----------------------------------------------------------------------------#
@@ -35,19 +35,19 @@ class Venue(db.Model):
     __searchable__= ["name","city","state","address"]
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
-    genres = db.Column(db.ARRAY(db.String)) # Added
+    genres = db.Column(db.ARRAY(db.String)) 
     address = db.Column(db.String(120))
     city = db.Column(db.String(120))
     state = db.Column(db.String(120))
     phone = db.Column(db.String(120))
-    website = db.Column(db.String(120)) #Added
+    website = db.Column(db.String(120)) 
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
-    seeking_talent = db.Column(db.Boolean, nullable=False, default=False) #Added
-    seeking_description = db.Column(db.String(500)) #Added
+    seeking_talent = db.Column(db.Boolean, nullable=False, default=False) 
+    seeking_description = db.Column(db.String(500)) 
     # One-to-Many Relationship
-    shows_ven = db.relationship('Show', backref='venue') #Added
-    past_shows_count = db.Column(db.Integer) #Added
+    shows_ven = db.relationship('Show', backref='venue', passive_deletes=True) 
+    past_shows_count = db.Column(db.Integer) 
 
     # DONE TODO: implement any missing fields, as a database migration using Flask-Migrate
 
@@ -66,14 +66,14 @@ class Artist(db.Model):
     image_link = db.Column(db.String(500))
     website = db.Column(db.String())
     # One-to-Many Relationship
-    shows_art = db.relationship('Show', backref='artist')
+    shows_art = db.relationship('Show', backref='artist', passive_deletes=True)
 
     # DONE TODO: implement any missing fields, as a database migration using Flask-Migrate
 
 class Show(db.Model):
   __tablename__='Show'
   id = db.Column(db.Integer, primary_key=True)
-  venue_id = db.Column(db.Integer, db.ForeignKey('Venue.id'))
+  venue_id = db.Column(db.Integer, db.ForeignKey('Venue.id', ondelete="CASCADE"))
   artist_id = db.Column(db.Integer, db.ForeignKey('Artist.id'))
   start_time = db.Column(db.DateTime, nullable=False)
 
@@ -82,96 +82,97 @@ class Show(db.Model):
 #  ----------------------------------------------------------------
 # Adding data to database for the first run only
 #  ----------------------------------------------------------------
+Tables = db.inspect(db.engine).get_table_names() # a variable to check if any tables exist in the DB
+if len(Tables)-1: # The condition checks if any tables exist in the DB. And "-1" as the 'alembic_version'] is created when flask db init is run
+  if Show.query.first() == None: # The condition is to check if there are any data in the table, if not it inserts mock data into the DB
+  # Venues data
+    datav1={
+        "id": 1,
+        "name": "The Musical Hop",
+        "genres": ["Jazz", "Reggae", "Swing", "Classical", "Folk"],
+        "address": "1015 Folsom Street",
+        "city": "San Francisco",
+        "state": "CA",
+        "phone": "123-123-1234",
+        "website": "https://www.themusicalhop.com",
+        "facebook_link": "https://www.facebook.com/TheMusicalHop",
+        "seeking_talent": True,
+        "seeking_description": "We are on the lookout for a local artist to play every two weeks. Please call us.",
+        "image_link": "https://images.unsplash.com/photo-1543900694-133f37abaaa5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=60"
+    }
+    datav2={
+        "id": 2,
+        "name": "The Dueling Pianos Bar",
+        "genres": ["Classical", "R&B", "Hip-Hop"],
+        "address": "335 Delancey Street",
+        "city": "New York",
+        "state": "NY",
+        "phone": "914-003-1132",
+        "website": "https://www.theduelingpianos.com",
+        "facebook_link": "https://www.facebook.com/theduelingpianos",
+        "seeking_talent": False,
+        "image_link": "https://images.unsplash.com/photo-1497032205916-ac775f0649ae?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80"
+    }
+    datav3={
+        "id": 3,
+        "name": "Park Square Live Music & Coffee",
+        "genres": ["Rock n Roll", "Jazz", "Classical", "Folk"],
+        "address": "34 Whiskey Moore Ave",
+        "city": "San Francisco",
+        "state": "CA",
+        "phone": "415-000-1234",
+        "website": "https://www.parksquarelivemusicandcoffee.com",
+        "facebook_link": "https://www.facebook.com/ParkSquareLiveMusicAndCoffee",
+        "seeking_talent": False,
+        "image_link": "https://images.unsplash.com/photo-1485686531765-ba63b07845a7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=747&q=80"
+    }
+    venue_data1 = Venue(**datav1)
+    venue_data2 = Venue(**datav2)
+    venue_data3 = Venue(**datav3)
+    db.session.add_all([venue_data1, venue_data2, venue_data3])
+    # END of Venues data
 
-if Show.query.first() == None:
-# Venues data
-  datav1={
-      "id": 1,
-      "name": "The Musical Hop",
-      "genres": ["Jazz", "Reggae", "Swing", "Classical", "Folk"],
-      "address": "1015 Folsom Street",
-      "city": "San Francisco",
-      "state": "CA",
-      "phone": "123-123-1234",
-      "website": "https://www.themusicalhop.com",
-      "facebook_link": "https://www.facebook.com/TheMusicalHop",
-      "seeking_talent": True,
-      "seeking_description": "We are on the lookout for a local artist to play every two weeks. Please call us.",
-      "image_link": "https://images.unsplash.com/photo-1543900694-133f37abaaa5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=60"
-  }
-  datav2={
-      "id": 2,
-      "name": "The Dueling Pianos Bar",
-      "genres": ["Classical", "R&B", "Hip-Hop"],
-      "address": "335 Delancey Street",
-      "city": "New York",
-      "state": "NY",
-      "phone": "914-003-1132",
-      "website": "https://www.theduelingpianos.com",
-      "facebook_link": "https://www.facebook.com/theduelingpianos",
-      "seeking_talent": False,
-      "image_link": "https://images.unsplash.com/photo-1497032205916-ac775f0649ae?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80"
-  }
-  datav3={
-      "id": 3,
-      "name": "Park Square Live Music & Coffee",
-      "genres": ["Rock n Roll", "Jazz", "Classical", "Folk"],
-      "address": "34 Whiskey Moore Ave",
-      "city": "San Francisco",
-      "state": "CA",
-      "phone": "415-000-1234",
-      "website": "https://www.parksquarelivemusicandcoffee.com",
-      "facebook_link": "https://www.facebook.com/ParkSquareLiveMusicAndCoffee",
-      "seeking_talent": False,
-      "image_link": "https://images.unsplash.com/photo-1485686531765-ba63b07845a7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=747&q=80"
-  }
-  venue_data1 = Venue(**datav1)
-  venue_data2 = Venue(**datav2)
-  venue_data3 = Venue(**datav3)
-  db.session.add_all([venue_data1, venue_data2, venue_data3])
-  # END of Venues data
-
-  # Artists data
-  dataa1={
-      "id": 4,
-      "name": "Guns N Petals",
-      "genres": ["Rock n Roll"],
-      "city": "San Francisco",
-      "state": "CA",
-      "phone": "326-123-5000",
-      "website": "https://www.gunsnpetalsband.com",
-      "facebook_link": "https://www.facebook.com/GunsNPetals",
-      "seeking_venue": True,
-      "seeking_description": "Looking for shows to perform at in the San Francisco Bay Area!",
-      "image_link": "https://images.unsplash.com/photo-1549213783-8284d0336c4f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=300&q=80"
-  }
-  dataa2={
-      "id": 5,
-      "name": "Matt Quevedo",
-      "genres": ["Jazz"],
-      "city": "New York",
-      "state": "NY",
-      "phone": "300-400-5000",
-      "facebook_link": "https://www.facebook.com/mattquevedo923251523",
-      "seeking_venue": False,
-      "image_link": "https://images.unsplash.com/photo-1495223153807-b916f75de8c5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80"
-  }
-  dataa3={
-      "id": 6,
-      "name": "The Wild Sax Band",
-      "genres": ["Jazz", "Classical"],
-      "city": "San Francisco",
-      "state": "CA",
-      "phone": "432-325-5432",
-      "seeking_venue": False,
-      "image_link": "https://images.unsplash.com/photo-1558369981-f9ca78462e61?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=794&q=80"
-  }
-  arist_data1 = Artist(**dataa1)
-  arist_data2 = Artist(**dataa2)
-  arist_data3 = Artist(**dataa3)
-  db.session.add_all([arist_data1, arist_data2, arist_data3])
-  db.session.commit()
- # END of Artists data
+    # Artists data
+    dataa1={
+        "id": 4,
+        "name": "Guns N Petals",
+        "genres": ["Rock n Roll"],
+        "city": "San Francisco",
+        "state": "CA",
+        "phone": "326-123-5000",
+        "website": "https://www.gunsnpetalsband.com",
+        "facebook_link": "https://www.facebook.com/GunsNPetals",
+        "seeking_venue": True,
+        "seeking_description": "Looking for shows to perform at in the San Francisco Bay Area!",
+        "image_link": "https://images.unsplash.com/photo-1549213783-8284d0336c4f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=300&q=80"
+    }
+    dataa2={
+        "id": 5,
+        "name": "Matt Quevedo",
+        "genres": ["Jazz"],
+        "city": "New York",
+        "state": "NY",
+        "phone": "300-400-5000",
+        "facebook_link": "https://www.facebook.com/mattquevedo923251523",
+        "seeking_venue": False,
+        "image_link": "https://images.unsplash.com/photo-1495223153807-b916f75de8c5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80"
+    }
+    dataa3={
+        "id": 6,
+        "name": "The Wild Sax Band",
+        "genres": ["Jazz", "Classical"],
+        "city": "San Francisco",
+        "state": "CA",
+        "phone": "432-325-5432",
+        "seeking_venue": False,
+        "image_link": "https://images.unsplash.com/photo-1558369981-f9ca78462e61?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=794&q=80"
+    }
+    arist_data1 = Artist(**dataa1)
+    arist_data2 = Artist(**dataa2)
+    arist_data3 = Artist(**dataa3)
+    db.session.add_all([arist_data1, arist_data2, arist_data3])
+    db.session.commit()
+  # END of Artists data
 
   # Shows Data
   show_data1 = Show(venue_id = 1, artist_id = 4, start_time = "2019-05-21T21:30:00.000Z" )
@@ -382,7 +383,6 @@ def delete_venue(venue_id):
       flash('Venue was successfully deleted!')
   # DONE BONUS CHALLENGE: Implement a button to delete a Venue on a Venue Page, have it so that
   # clicking that button delete it from the db then redirect the user to the homepage
-  flash('Venue ' + request.form['name'] + ' was successfully listed!')
   return render_template('pages/home.html')
 
 #  Artists
