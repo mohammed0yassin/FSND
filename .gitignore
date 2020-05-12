@@ -12011,3 +12011,5 @@ projects/02_trivia_api/starter/frontend/node_modules/bluebird/js/release/finally
 projects/02_trivia_api/starter/frontend/node_modules/bluebird/js/release/generators.js
 projects/02_trivia_api/starter/frontend/node_modules/bluebird/js/release/join.js
 projects/02_trivia_api/starter/frontend/node_modules/bluebird/js/release/map.js
+projects/02_trivia_api/starter/frontend/node_modules/body-parser/lib/types/json.js
+projects/02_trivia_api/starter/frontend/node_modules/*
