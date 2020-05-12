@@ -45,8 +45,6 @@ def create_app(test_config=None):
   def get_categories():
     selection = Category.query.all()
     categories = {category.id:category.type for category in selection} 
-    if len(categories) == 0:
-      abort(404)
 
     return jsonify({
       'success': True,
@@ -70,7 +68,9 @@ def create_app(test_config=None):
   def get_questions():
     selection = Question.query.all()
     current_questions = paginate_questions(request,selection)
-   
+    if len(current_questions) == 0:
+      abort(404)
+
     cat_selection = Category.query.all()
     categories = {category.id:category.type for category in cat_selection} 
     return jsonify({
@@ -104,6 +104,7 @@ def create_app(test_config=None):
       categories = {category.id:category.type for category in cat_selection} 
       return jsonify({
         'success': True,
+        'deleted': question_id,
         'questions': current_questions,
         'total_questions':len(selection),
         'categories': categories,
@@ -140,10 +141,11 @@ def create_app(test_config=None):
           'success': True,
           'questions': current_questions,
           'total_questions': len(selection),
-          'current_category': None
+          'current_category': None,
         })
 
       # Create a new question
+
       data = {
         'question': request.get_json()['question'],
         'answer': request.get_json()['answer'],
@@ -152,7 +154,8 @@ def create_app(test_config=None):
       }
 
       if not data['question'] or not data['answer']: #if no question or answer are entered. 
-        abort(400)    #Sometimes it doesn't work because of a fault in the frontend which doesn't clear the variable of the field unless refreshed the page
+        abort(404)    #it doesn't work after sumbitting a question succeffult for thefirst time because of a fault in the frontend 
+       #                            which doesn't clear the variable of the field unless refreshed the page
        #                             ,hense sends the last created question with the request even if you cleared the field.
       
       question = Question(**data)
@@ -190,6 +193,7 @@ def create_app(test_config=None):
     current_questions = paginate_questions(request,selection)
     
     return jsonify({
+      'success': True,
       'questions': current_questions,
       'total_questions': len(selection),
       'current_category': category_id
@@ -242,7 +246,7 @@ def create_app(test_config=None):
     except:
       abort(422)
   '''
-  @TODO: 
+  @DONE TODO: 
   Create error handlers for all expected errors 
   including 404 and 422. 
   '''
@@ -252,23 +256,31 @@ def create_app(test_config=None):
       'success': False,
       'error': 400,
       'message': 'Bad Request'
-    }),400
+    }), 400
 
   @app.errorhandler(404)
-  def bad_request(error):
+  def not_found(error):
     return jsonify({
       'success': False,
       'error': 404,
       'message': 'Resource Not Found'
-    }),404
+    }), 404
 
   @app.errorhandler(422)
-  def bad_request(error):
+  def unproccessable(error):
     return jsonify({
       'success': False,
       'error': 422,
       'message': 'Unproccessable'
-    }),422
+    }), 422
+
+  @app.errorhandler(500)
+  def internal_server_error(error):
+    return jsonify({
+      'success': False,
+      'error': 500,
+      'message': 'Internal Server Error'
+    }), 500
   
   return app
 

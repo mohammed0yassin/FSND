@@ -87,6 +87,138 @@ GET '/categories'
 '5' : "Entertainment",
 '6' : "Sports"}
 
+GET '/questions/'
+- Fetchs a dictionary of questions in which the keys are the
+ids and the corresponding question, its answer, its difficulty and the category which the question belongs to
+- Request Arguments: page number
+- Returns: a list of question objects, success value, total number of questions and a list of category objects.
+Results are paginated in groups of 10. Include a request argument to choose page number, starting from 1.
+{
+  "categories": {
+    "1": "Science",
+    "2": "Art",
+    "3": "Geography",
+    "4": "History",
+    "5": "Entertainment",
+    "6": "Sports"
+  },
+  "current_category": null,
+  "questions": [
+    {
+      "answer": "Apollo 13",
+      "category": 5,
+      "difficulty": 4,
+      "id": 2,
+      "question": "What movie earned Tom Hanks his third straight Oscar nomination, in 1996?"
+    },
+    {
+        ....
+    }
+  ],
+  "success": true,
+  "total_questions": 16
+}
+
+DELETE '/questions/{question_id}'
+- Deletes the question of the given ID if it exists. Returns the id of the deleted question, success value, total questions, list of categoy objects and questions list based on current page number to update the frontend.
+{
+  "categories": {
+    "1": "Science",
+    "2": "Art",
+    "3": "Geography",
+    "4": "History",
+    "5": "Entertainment",
+    "6": "Sports"
+  },
+  "current_category": null,
+  "deleted": 15,
+  "questions": [
+    {
+      "answer": "Apollo 13",
+      "category": 5,
+      "difficulty": 4,
+      "id": 2,
+      "question": "What movie earned Tom Hanks his third straight Oscar nomination, in 1996?"
+    },
+    {
+        ...
+    }
+  ],
+  "success": true,
+  "total_questions": 15
+}
+
+POST '/questions'
+= Has two purposes:
+1) - Creates a new question using the submitted question, answer, category and difficulty.
+- Returns the id of the created question and success value
+{
+  "created": 30,
+  "success": true
+}
+
+2) - Searchs for a question in the list of all questions from the submitted search term
+- Returns the success value, total questions that matches the search, list of categoy objects and questions list based on current page number to update the frontend.
+{
+  "current_category": null,
+  "questions": [
+    {
+      "answer": "Apollo 13",
+      "category": 5,
+      "difficulty": 4,
+      "id": 2,
+      "question": "What movie earned Tom Hanks his third straight Oscar nomination, in 1996?"
+    }
+  ],
+  "success": true,
+  "total_questions": 1
+}
+
+GET '/categories/{category_id}/questions'
+- Fetches a dictionay of questions in category specified by the category_id
+- Returns an object with a single key, categories, that contains a object of id: category_string key:value pairs. and a list of question objects that belong to the specified category
+{
+  "current_category": 5,
+  "questions": [
+    {
+      "answer": "Apollo 13",
+      "category": 5,
+      "difficulty": 4,
+      "id": 2,
+      "question": "What movie earned Tom Hanks his third straight Oscar nomination, in 1996?"
+    },
+    {
+      "answer": "Tom Cruise",
+      "category": 5,
+      "difficulty": 4,
+      "id": 4,
+      "question": "What actor did author Anne Rice first denounce, then praise in the role of her beloved Lestat?"
+    }
+  ],
+  "success": true,
+  "total_questions": 2
+}
+
+
+POST '/quizzes'
+- It is used to play the game. it starts the game with questions from the selected category.
+- Requests the 'quiz_category' and 'previous_questions' that were displayed
+- Returns a random question from the specifed category (if returned question = Flase, that means that there are no more questions in this category and it ends the game and displays the score), success value and the previous questions with the added question from this request.
+{
+  "previousQuestions": [
+    10,
+    15
+  ],
+  "question": {
+    "answer": "Escher",
+    "category": 2,
+    "difficulty": 1,
+    "id": 16,
+    "question": "Which Dutch graphic artist–initials M C was a creator of optical illusions?"
+  },
+  "success": true
+}
+
 ```
 
 
