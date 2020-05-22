@@ -77,7 +77,8 @@ GET '/actors': an endpoint to view the actors of the agency
   requires permission 'get:actors'
 '''
 @app.route('/actors')
-def view_actors():
+@requires_auth('get:actors')
+def view_actors(payload):
   actors_all = Actor.query.all()
   actors = [actor.format() for actor in actors_all]
   if len(actors) == 0:
@@ -92,7 +93,8 @@ GET '/movies': an endpoint to view the movies of the agency
   requires permission 'get:movies'
 '''
 @app.route('/movies')
-def view_movies():
+@requires_auth('get:movies')
+def view_movies(payload):
   movies_all = Movie.query.all()
   movies = [movie.format() for movie in movies_all]
   if len(movies) == 0:
@@ -107,7 +109,8 @@ POST '/actors': An endpoint that adds a new actor
   requires permission 'post:actors'
 '''
 @app.route('/actors', methods=['POST'])
-def add_actor():
+@requires_auth('post:actors')
+def add_actor(payload):
   try:
     body = request.get_json()
     actor_data = {
@@ -135,7 +138,8 @@ POST '/movies': An endpoint that adds a new movie
   requires permission 'post:movies'
 '''
 @app.route('/movies', methods=['POST'])
-def add_movie():
+@requires_auth('post:movies')
+def add_movie(payload):
   try:
     body = request.get_json()
     # release_date format: '%Y-%m-%d %H:%M:%S' # example: "2019-05-21 21:30:00"
@@ -165,7 +169,8 @@ POST '/shows': an end point to add a new show
   requires permission 'post:shows'
 '''
 @app.route('/shows', methods=['POST'])
-def add_show():
+@requires_auth('post:shows')
+def add_show(payload):
   try:
     body = request.get_json()
     show_data = {
@@ -198,7 +203,8 @@ PATCH '/actors/<id>': An endpoint to edit an actor
   requires permission 'patch:actors'
 '''
 @app.route('/actors/<id>', methods=['PATCH'])
-def edit_actor(id):
+@requires_auth('patch:actors')
+def edit_actor(payload, id):
   try:
     body = request.get_json()
     new_name = body.get('name', None)
@@ -232,7 +238,8 @@ PATCH '/movies/<id>': An endpoint to edit a movie
   requires permission 'patch:movies'
 '''
 @app.route('/movies/<id>', methods=['PATCH'])
-def edit_movie(id):
+@requires_auth('patch:movies')
+def edit_movie(payload, id):
   try:
     body = request.get_json()
     new_title = body.get('title', None)
@@ -265,7 +272,8 @@ DELETE '/actors/<id>': an endpoint to delete an actor
   requires permission 'delete:actors'
 '''
 @app.route('/actors/<id>', methods=['DELETE'])
-def delete_actor(id):
+@requires_auth('delete:actors')
+def delete_actor(payload, id):
   select_actor = Actor.query.get(id)
   
   if select_actor is None:
@@ -287,7 +295,8 @@ DELETE '/movies/<id>': an endpoint to delete an movie
   requires permission 'delete:movies'
 '''
 @app.route('/movies/<id>', methods=['DELETE'])
-def delete_movie(id):
+@requires_auth('delete:movies')
+def delete_movie(payload, id):
   select_movie = Movie.query.get(id)
   if select_movie is None:
     abort(404)
@@ -308,7 +317,8 @@ DELETE '/shows/<movie_id>': an endpoint to delete a show using its movie_id
   requires permission 'delete:shows'
 '''
 @app.route('/shows/<movie_id>', methods=['DELETE'])
-def delete_show(movie_id):
+@requires_auth('delete:shows')
+def delete_show(payload, movie_id):
   selected_show = Show.query.filter(Show.movie_id == movie_id).all()
   if not selected_show: # if no shows with this movie exist, abort
     abort(404)
