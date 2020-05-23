@@ -59,7 +59,7 @@ def create_app(test_config=None):
       return response
 
   '''
-  Get '/shows': a public endpoint for anyone to view the shows of the agency
+  GET '/shows': a public endpoint for anyone to view the shows of the agency
   '''
   @app.route('/shows')
   def view_shows():
