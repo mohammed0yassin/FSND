@@ -1,0 +1,318 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 12.2
+-- Dumped by pg_dump version 12.2
+
+-- Started on 2020-05-23 05:31:34
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 204 (class 1259 OID 66368)
+-- Name: Actor; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."Actor" (
+    id integer NOT NULL,
+    name character varying,
+    age integer,
+    gender character varying
+);
+
+
+ALTER TABLE public."Actor" OWNER TO postgres;
+
+--
+-- TOC entry 203 (class 1259 OID 66366)
+-- Name: Actor_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public."Actor_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public."Actor_id_seq" OWNER TO postgres;
+
+--
+-- TOC entry 2856 (class 0 OID 0)
+-- Dependencies: 203
+-- Name: Actor_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public."Actor_id_seq" OWNED BY public."Actor".id;
+
+
+--
+-- TOC entry 206 (class 1259 OID 66379)
+-- Name: Movie; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."Movie" (
+    id integer NOT NULL,
+    title character varying,
+    release_date timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE public."Movie" OWNER TO postgres;
+
+--
+-- TOC entry 205 (class 1259 OID 66377)
+-- Name: Movie_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public."Movie_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public."Movie_id_seq" OWNER TO postgres;
+
+--
+-- TOC entry 2857 (class 0 OID 0)
+-- Dependencies: 205
+-- Name: Movie_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public."Movie_id_seq" OWNED BY public."Movie".id;
+
+
+--
+-- TOC entry 208 (class 1259 OID 66390)
+-- Name: Show; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."Show" (
+    id integer NOT NULL,
+    movie_id integer,
+    actor_id integer
+);
+
+
+ALTER TABLE public."Show" OWNER TO postgres;
+
+--
+-- TOC entry 207 (class 1259 OID 66388)
+-- Name: Show_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public."Show_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public."Show_id_seq" OWNER TO postgres;
+
+--
+-- TOC entry 2858 (class 0 OID 0)
+-- Dependencies: 207
+-- Name: Show_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public."Show_id_seq" OWNED BY public."Show".id;
+
+
+--
+-- TOC entry 202 (class 1259 OID 66361)
+-- Name: alembic_version; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.alembic_version (
+    version_num character varying(32) NOT NULL
+);
+
+
+ALTER TABLE public.alembic_version OWNER TO postgres;
+
+--
+-- TOC entry 2705 (class 2604 OID 66371)
+-- Name: Actor id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Actor" ALTER COLUMN id SET DEFAULT nextval('public."Actor_id_seq"'::regclass);
+
+
+--
+-- TOC entry 2706 (class 2604 OID 66382)
+-- Name: Movie id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Movie" ALTER COLUMN id SET DEFAULT nextval('public."Movie_id_seq"'::regclass);
+
+
+--
+-- TOC entry 2707 (class 2604 OID 66393)
+-- Name: Show id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Show" ALTER COLUMN id SET DEFAULT nextval('public."Show_id_seq"'::regclass);
+
+
+--
+-- TOC entry 2846 (class 0 OID 66368)
+-- Dependencies: 204
+-- Data for Name: Actor; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."Actor" (id, name, age, gender) FROM stdin;
+1	Mohammed	20	Male
+2	Nadine	20	Female
+3	Jack	26	Male
+4	Will	23	Male
+5	Scarlet	27	Female
+\.
+
+
+--
+-- TOC entry 2848 (class 0 OID 66379)
+-- Dependencies: 206
+-- Data for Name: Movie; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."Movie" (id, title, release_date) FROM stdin;
+1	Rise of the APIs	2021-04-11 21:30:00
+2	The New Upcoming Movie	2020-09-21 21:30:00
+\.
+
+
+--
+-- TOC entry 2850 (class 0 OID 66390)
+-- Dependencies: 208
+-- Data for Name: Show; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."Show" (id, movie_id, actor_id) FROM stdin;
+1	1	1
+2	1	2
+3	2	3
+4	2	4
+5	2	5
+\.
+
+
+--
+-- TOC entry 2844 (class 0 OID 66361)
+-- Dependencies: 202
+-- Data for Name: alembic_version; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.alembic_version (version_num) FROM stdin;
+f64378471ca6
+\.
+
+
+--
+-- TOC entry 2859 (class 0 OID 0)
+-- Dependencies: 203
+-- Name: Actor_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public."Actor_id_seq"', 5, true);
+
+
+--
+-- TOC entry 2860 (class 0 OID 0)
+-- Dependencies: 205
+-- Name: Movie_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public."Movie_id_seq"', 2, true);
+
+
+--
+-- TOC entry 2861 (class 0 OID 0)
+-- Dependencies: 207
+-- Name: Show_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public."Show_id_seq"', 5, true);
+
+
+--
+-- TOC entry 2711 (class 2606 OID 66376)
+-- Name: Actor Actor_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Actor"
+    ADD CONSTRAINT "Actor_pkey" PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2713 (class 2606 OID 66387)
+-- Name: Movie Movie_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Movie"
+    ADD CONSTRAINT "Movie_pkey" PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2715 (class 2606 OID 66395)
+-- Name: Show Show_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Show"
+    ADD CONSTRAINT "Show_pkey" PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2709 (class 2606 OID 66365)
+-- Name: alembic_version alembic_version_pkc; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.alembic_version
+    ADD CONSTRAINT alembic_version_pkc PRIMARY KEY (version_num);
+
+
+--
+-- TOC entry 2716 (class 2606 OID 66396)
+-- Name: Show Show_actor_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Show"
+    ADD CONSTRAINT "Show_actor_id_fkey" FOREIGN KEY (actor_id) REFERENCES public."Actor"(id) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 2717 (class 2606 OID 66401)
+-- Name: Show Show_movie_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Show"
+    ADD CONSTRAINT "Show_movie_id_fkey" FOREIGN KEY (movie_id) REFERENCES public."Movie"(id) ON DELETE CASCADE;
+
+
+-- Completed on 2020-05-23 05:31:34
+
+--
+-- PostgreSQL database dump complete
+--
+
